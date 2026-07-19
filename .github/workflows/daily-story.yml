@@ -1,0 +1,28 @@
+name: Daily Cute Story Alarm Clock
+
+on:
+  schedule:
+    # This tells the robot to wake up every single day at 6:00 AM IST (00:30 UTC)
+    - cron: '30 0 * * *'
+  workflow_dispatch: # This adds a button so you can manually test it anytime!
+
+jobs:
+  send-story:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open Project Folder
+        uses: actions/checkout@v4
+
+      - name: Pick Today's Story and Text My Phone
+        env:
+          NOTIFY_LINK: ${{ secrets.NOTIFICATION_URL }}
+        run: |
+          # This line reads your stories.txt file and picks a random line
+          STORY=$(shuf -n 1 stories.txt)
+          
+          # This line sends that story down the internet pipeline directly to your phone app
+          curl -H "Title: Today's Cute Love Story Idea" \
+               -H "Priority: high" \
+               -H "Tags: heart,robot" \
+               -d "$STORY" \
+               $NOTIFY_LINK
